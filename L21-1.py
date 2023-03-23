@@ -1,73 +1,65 @@
 class Matrix:
-    def __init__(self, matrix):
-        self.matrix = matrix
-        self.rows = len(matrix)
-        self.cols = len(matrix[0])
+    def __init__(self, matrix_list):
+        self.matrix = matrix_list
 
     def __str__(self):
-        return '\n'.join([' '.join(map(str, row)) for row in self.matrix])
+        matrix_str = ""
+        for row in self.matrix:
+            matrix_str += " ".join(str(num) for num in row) + "\n"
+        return matrix_str
 
     def __add__(self, other):
-        if (self.rows != other.rows) or (self.cols != other.cols):
-            raise ValueError("Matrices are not the same size.")
-        result = []
-        for i in range(self.rows):
+        if len(self.matrix) != len(other.matrix) or len(self.matrix[0]) != len(other.matrix[0]):
+            raise ValueError("Matrices are not the same size")
+        result_matrix = []
+        for i in range(len(self.matrix)):
             row = []
-            for j in range(self.cols):
+            for j in range(len(self.matrix[0])):
                 row.append(self.matrix[i][j] + other.matrix[i][j])
-            result.append(row)
-        return Matrix(result)
+            result_matrix.append(row)
+        return Matrix(result_matrix)
 
     def __sub__(self, other):
-        if (self.rows != other.rows) or (self.cols != other.cols):
-            raise ValueError("Matrices are not the same size.")
-        result = []
-        for i in range(self.rows):
+        if len(self.matrix) != len(other.matrix) or len(self.matrix[0]) != len(other.matrix[0]):
+            raise ValueError("Matrices are not the same size")
+        result_matrix = []
+        for i in range(len(self.matrix)):
             row = []
-            for j in range(self.cols):
+            for j in range(len(self.matrix[0])):
                 row.append(self.matrix[i][j] - other.matrix[i][j])
-            result.append(row)
-        return Matrix(result)
+            result_matrix.append(row)
+        return Matrix(result_matrix)
 
     def __mul__(self, other):
-        if isinstance(other, int) or isinstance(other, float):
-            result = []
-            for i in range(self.rows):
+        if isinstance(other, (int, float)):
+            result_matrix = []
+            for i in range(len(self.matrix)):
                 row = []
-                for j in range(self.cols):
+                for j in range(len(self.matrix[0])):
                     row.append(self.matrix[i][j] * other)
-                result.append(row)
-            return Matrix(result)
+                result_matrix.append(row)
+            return Matrix(result_matrix)
         elif isinstance(other, Matrix):
-            if self.cols != other.rows:
-                raise ValueError("Matrices are not compatible for multiplication.")
-            result = []
-            for i in range(self.rows):
+            if len(self.matrix[0]) != len(other.matrix):
+                raise ValueError("The number of columns in the first matrix must equal the number of rows in the second matrix")
+            result_matrix = []
+            for i in range(len(self.matrix)):
                 row = []
-                for j in range(other.cols):
-                    sum = 0
-                    for k in range(self.cols):
-                        sum += self.matrix[i][k] * other.matrix[k][j]
-                    row.append(sum)
-                result.append(row)
-            return Matrix(result)
-        else:
-            raise ValueError("Invalid operand type.")
+                for j in range(len(other.matrix[0])):
+                    col = [other.matrix[k][j] for k in range(len(other.matrix))]
+                    dot_product = sum([self.matrix[i][k] * col[k] for k in range(len(col))])
+                    row.append(dot_product)
+                result_matrix.append(row)
+            return Matrix(result_matrix)
 
     def transpose(self):
-        result = []
-        for j in range(self.cols):
+        transposed_matrix = []
+        for j in range(len(self.matrix[0])):
             row = []
-            for i in range(self.rows):
+            for i in range(len(self.matrix)):
                 row.append(self.matrix[i][j])
-            result.append(row)
-        return Matrix(result)
+            transposed_matrix.append(row)
+        return Matrix(transposed_matrix)
 
-    def __eq__(self, other):
-        if (self.rows != other.rows) or (self.cols != other.cols):
-            return False
-        for i in range(self.rows):
-            for j in range(self.cols):
-                if self.matrix[i][j] != other.matrix[i][j]:
-                    return False
-        return True
+    def to_list(self):
+        return self.matrix
